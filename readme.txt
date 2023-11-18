@@ -6,6 +6,8 @@
 
 Author: Michael Brown, Newcastle, Australia
 
+Email : vmslib@b5.net
+
 Latest Versions available at 
 https://eisner.decus.org/~brown_mi/
 
