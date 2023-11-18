@@ -5,7 +5,6 @@
 		 For VAX and Alpha
 
 Author: Michael Brown, Newcastle, Australia
-E-mail: vmslib@b5.net
 
 Latest Versions available at 
 https://eisner.decus.org/~brown_mi/
