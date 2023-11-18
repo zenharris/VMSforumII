@@ -2,7 +2,7 @@
 
                      VMSforumII
  		  BBS style Forum
-		 For VAX and Alpha
+	    For Openvms on VAX and Alpha
 
 Author: Michael Brown, Newcastle, Australia
 
