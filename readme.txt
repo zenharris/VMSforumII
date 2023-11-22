@@ -1,5 +1,4 @@
 
-
                      VMSforumII
  		  BBS style Forum
 	    For Openvms on VAX and Alpha
