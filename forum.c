@@ -32,7 +32,7 @@
 
 #include "forfile.h"
 
-#define VERSION "2.25"  
+#define VERSION "2.25.1"  
 
 
 /*  Moved to forfile.h
@@ -1294,7 +1294,7 @@ if (!update) {
 
 
       while(!exit) {
-         Help("Texaco v3.01    ^Z exit  ^L insert line  ^D delete line");
+         Help("Texaco :    ^Z exit  ^L insert line  ^D delete line");
 
          texaco (&start_line,TopLine+4,BottomLine-1,&retcode,&edited,TOTAL_LINES,RIGHT_MARGIN,linedt,INSERT_MODE | WORD_WRAP,NULL);
 
@@ -1413,7 +1413,7 @@ struct rfabuff *Rec;
       do { 
          save_record_read(&fileio.record.posted);
     
-         Clear_Region(TopLine,BottomLine);         
+         Clear_Region(TopLine,BottomLine);       
 
          sprintf(outbuffer,"Sender  : %.*s",SIZE_UNAME,fileio.record.user_name); 
          put_line(Standard_Window,outbuffer); 
@@ -1448,6 +1448,7 @@ struct rfabuff *Rec;
          
          switch (retcode) {
             case SMG$K_TRM_CTRLZ:
+               Status("");
                Exit = TRUE;
                break;
             case SMG$K_TRM_CTRLR:
