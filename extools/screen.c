@@ -198,11 +198,11 @@ void ServiceBroadcast()
 
    int Clear_Region(unsigned int TopLine,unsigned int BottomLine)
    {
-/*
-      return smg$erase_display(&crnt_window->display_id,&TopLine,&1,&BottomLine,&TermWidth);
-*/
-      return smg$erase_display(&crnt_window->display_id,&TopLine,&1);
 
+      return smg$erase_display(&crnt_window->display_id,&TopLine,&1,&BottomLine,&TermWidth);
+/*
+      return smg$erase_display(&crnt_window->display_id,&TopLine,&1);
+*/
       Refresh(crnt_window->display_id);
    }
 
