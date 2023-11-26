@@ -184,14 +184,16 @@ void ServiceBroadcast()
    void Scroll_Up(unsigned int TopLine,unsigned int BottomLine)
    {
       int status, height = (BottomLine - TopLine)+1;
-      status = smg$scroll_display_area (&crnt_window->display_id,&TopLine,&1,&height,&TermWidth,&SMG$M_UP,&1);
+      status = smg$scroll_display_area (&crnt_window->display_id,
+                                        &TopLine,&1,&height,&crnt_window->width/*TermWidth*/,&SMG$M_UP,&1);
       Refresh(crnt_window->display_id);
    }
 
    void Scroll_Down(unsigned int TopLine,unsigned int BottomLine)
    {
       int status, height = (BottomLine - TopLine)+1;
-      status = smg$scroll_display_area (&crnt_window->display_id,&TopLine,&1,&height,&TermWidth,&SMG$M_DOWN,&1);
+      status = smg$scroll_display_area (&crnt_window->display_id,
+                                        &TopLine,&1,&height,&crnt_window->width/*TermWidth*/,&SMG$M_DOWN,&1);
       Refresh(crnt_window->display_id);
    }
 
@@ -199,7 +201,7 @@ void ServiceBroadcast()
    int Clear_Region(unsigned int TopLine,unsigned int BottomLine)
    {
 
-      return smg$erase_display(&crnt_window->display_id,&TopLine,&1,&BottomLine,&TermWidth);
+      return smg$erase_display(&crnt_window->display_id,&TopLine,&1,&BottomLine,&crnt_window->width);
 /*
       return smg$erase_display(&crnt_window->display_id,&TopLine,&1);
 */
