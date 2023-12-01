@@ -118,7 +118,7 @@ struct cmndline_params cmndline[];
 
    /*   exscrprn(strncat(disp_str,edtstr,lnth),row,col,attr); */
       exscrprn(edtstr,row,col,attr);
-      Refresh(crnt_window->display_id);
+/* ZEN      Refresh(crnt_window->display_id);   */
       return(0);
    } else if (*control & ALLOCATE) {
       (*(char **)edtstr) =(char *) balloc();

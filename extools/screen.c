@@ -205,7 +205,7 @@ void ServiceBroadcast()
 /*
       return smg$erase_display(&crnt_window->display_id,&TopLine,&1);
 */
-      Refresh(crnt_window->display_id);
+/*      Refresh(crnt_window->display_id); */
    }
 
 
