@@ -431,7 +431,7 @@ if_record_read (Rec)
 
   readrab.rab$b_krf = 0;
   readrab.rab$l_kbf = (char *) Rec;
-  readrab.rab$b_ksz = sizeof readbuff;
+  readrab.rab$b_ksz = sizeof(struct timebuff);
   readrab.rab$b_rac = RAB$C_KEY;
   readrab.rab$l_rop = RAB$M_RRL | RAB$V_CDK;
 

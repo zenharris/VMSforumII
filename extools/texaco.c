@@ -495,28 +495,45 @@ struct line_rec **crnt_list;
 int *crnt_line;
 {
    struct line_rec *temp_list;
-   int temp,temp1,offset = 0,control = INIT_ONLY,pos;
-   (*crnt_line) = t_line;
-   temp_list = (*crnt_list);
+   int temp,temp1,offset = 0,pos;
+   int save_line = (*crnt_line),count = 0;
 
- /*  exscrldn((t_line << 8) + 0,(b_line << 8) +(crnt_window->width - 1),0,WHITE); */
+/*   (*crnt_line) = t_line; */
+
+   temp_list = (*crnt_list);
 
    erase_text_region(t_line,b_line);
 
+/*
    temp = b_line - t_line;
    temp /= 2;
+
    for (temp1 =1;temp1 < temp;temp1++)
       if (temp_list->last != NULL){
          temp_list = temp_list->last;
          offset++;
       }
-   while ((temp_list != NULL) && (*crnt_line <= b_line)) {
-      (*line_ed)(temp_list->storage,(*crnt_line)++,0,right_margin,WHITE,&pos,&control);
+*/
+
+ 
+   for (;(*crnt_line)>t_line;(*crnt_line)--)
+      if (temp_list->last != NULL)
+         temp_list = temp_list->last;
+   
+
+   while ((temp_list != NULL) && ((*crnt_line) <= b_line)) {
+    /*  if(temp_list == (*crnt_list)) save_line = (*crnt_line); */
+
+      if(count++ == (save_line- t_line)/*+1*/) (*crnt_list) = temp_list;
+
+      (*line_ed)(temp_list->storage,(*crnt_line)++,0,right_margin,WHITE,&pos,&INIT_ONLY);
+
       temp_list = temp_list->next;
    }
+   (*crnt_line) = save_line;
    Refresh(crnt_window->display_id);
 
-   (*crnt_line) = t_line + offset;
+/*   (*crnt_line) = t_line + offset; */
 }
 
 
@@ -543,6 +560,19 @@ int *total_lines;
 	 	carridge_return(t_line,b_line,line_ed,crnt_list,crnt_line,line_counter,crnt_pos,word_warp_flag,total_lines);
 		(*crnt_pos) = 0;
 	 }
+}
+
+int count_to_begin (crnt_list)
+struct line_rec *crnt_list;
+{
+   int counter;
+   struct line_rec *tempptr;
+  
+   tempptr = crnt_list;
+
+   for (counter=0;tempptr != NULL;counter++) tempptr = tempptr->last;
+   return counter;
+
 }
 
 
@@ -663,10 +693,11 @@ struct cmndline_params cmndline[];
                                     line_counter++);
                           initialize(t_line,b_line,line_ed,crnt_list,&crnt_line);
                           break;
-              case SMG$K_TRM_PREV_SCREEN : for(c = 0;c < (b_line - t_line)
-                                    && (*crnt_list)->last != NULL;
-                                    c++,(*crnt_list) = (*crnt_list)->last,
-                                    line_counter--);
+              case SMG$K_TRM_PREV_SCREEN :
+                               /*  warn_user("%u %u",count_to_begin(*crnt_list),crnt_line-t_line+1); */
+                                 if(count_to_begin(*crnt_list) > (crnt_line-t_line)+1)
+                                    for(c = 0;c < (b_line - t_line) && (*crnt_list)->last != NULL;
+                                    c++,(*crnt_list) = (*crnt_list)->last,line_counter--);
                           initialize(t_line,b_line,line_ed,crnt_list,&crnt_line);
                           break;
          case CTRL_PGUP : for(;(*crnt_list)->last != NULL;line_counter--,
