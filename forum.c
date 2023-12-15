@@ -1443,7 +1443,6 @@ Post_Reply (update)
       texaco (&start_line, TopLine + 4, BottomLine - 1, &retcode, &edited,
               TOTAL_LINES, RIGHT_MARGIN, linedt, INSERT_MODE | WORD_WRAP,
               NULL);
-
       if (edited)
         {
 
@@ -1512,7 +1511,7 @@ Post_Reply (update)
 
   delete_editor_buffer (&start_line);
 
-
+  if (update) Status ("");  
 }
 
 

@@ -109,7 +109,7 @@ struct cmndline_params cmndline[];
    uint16 scan,inchr;
 	struct linedt_msg_rec msg;
 	char disp_str[101]; /*81]; */
-	static char comp_str[81];
+	static char comp_str[128] = "";
 	
 
    if (*control & INIT_ONLY) {
@@ -124,11 +124,15 @@ struct cmndline_params cmndline[];
       (*(char **)edtstr) =(char *) balloc();
       return(0);
    } else if (*control & COMP_LOAD) {
-		*comp_str = 0;
+    /*		*comp_str = 0;
       strncat(comp_str,edtstr,lnth);
+    */
+      strcpy(comp_str,edtstr);
       return(0);
    } else if (*control & COMP_CHECK) {
-      return (strncmp(comp_str,edtstr,lnth) != 0);
+
+   /*   return (strncmp(comp_str,edtstr,lnth) != 0); */
+      return (strcmp(comp_str,edtstr) != 0);
    }
 	msg.edtstr = edtstr;
 	msg.col = col;
@@ -184,10 +188,6 @@ struct cmndline_params cmndline[];
                       case SMG$K_TRM_LEFT  : /*if (*pos > 0)*/ (*pos)--;
                                    break;
 
-                      case END  : *pos = min(lnth-1,strlen(edtstr));
-                                 break;
-                      case HOME : *pos = 0;
-                                 break;
                       case SMG$K_TRM_REMOVE :if (!read_only && !block_insdel && strlen(edtstr) > *pos) {
                                       delete(edtstr,*pos);
                                       if (del_buffer[0] == 0)
@@ -212,6 +212,11 @@ struct cmndline_params cmndline[];
                                      break;
                    }
                    break;
+         case SMG$K_TRM_CTRLE : if(!read_only) *pos = min(lnth-1,strlen(edtstr));
+                                else exit = FALSE;
+                                 break;
+         case SMG$K_TRM_CTRLH : *pos = 0;
+                                 break;
          case SMG$K_TRM_CTRLL:
          case SMG$K_TRM_CTRLD: exit = FALSE;
                                break;
@@ -227,9 +232,9 @@ struct cmndline_params cmndline[];
          case  SMG$K_TRM_CTRLP:
          case  SMG$K_TRM_CTRLN:
          case  SMG$K_TRM_CTRLR:
-         case  SMG$K_TRM_CTRLE:
+         case  SMG$K_TRM_CTRLT:
+         case  SMG$K_TRM_CTRLW:
          case  SMG$K_TRM_CTRLU:
-
          case  SMG$K_TRM_CTRLZ: exit = FALSE;
                      break;
          case SMG$K_TRM_DELETE :
@@ -621,11 +626,13 @@ struct cmndline_params cmndline[];
 /*      exclreol(t_line,70,LIGHTGRAY);
       sprintf(convstr,"L %d",line_counter);
       exscrprn(convstr,t_line,70,LIGHTGRAY);*/
-      control = COMP_LOAD;
-      (*line_ed)((*crnt_list)->storage,0,0,right_margin,0,NULL,&control);
-      scan = (*line_ed)((*crnt_list)->storage,crnt_line,0,right_margin,WHITE,&crnt_pos,&cont,cmndline);
-      control = COMP_CHECK;
-      if ((*line_ed)((*crnt_list)->storage,0,0,right_margin,0,NULL,&control)) *edited = TRUE;
+
+      (*line_ed)((*crnt_list)->storage,0,0,right_margin,0,NULL,&COMP_LOAD);
+ 
+     scan = (*line_ed)((*crnt_list)->storage,crnt_line,0,right_margin,WHITE,&crnt_pos,&cont,cmndline);
+ 
+      if ((*line_ed)((*crnt_list)->storage,0,0,right_margin,0,NULL,&COMP_CHECK)) *edited = TRUE;
+    
       control = ALLOCATE;
 
       if (!insert_mode && (*crnt_list)->next != NULL) if (scan == ENTER){crnt_pos = 0; scan = DARR;}
@@ -694,7 +701,6 @@ struct cmndline_params cmndline[];
                           initialize(t_line,b_line,line_ed,crnt_list,&crnt_line);
                           break;
               case SMG$K_TRM_PREV_SCREEN :
-                               /*  warn_user("%u %u",count_to_begin(*crnt_list),crnt_line-t_line+1); */
                                  if(count_to_begin(*crnt_list) > (crnt_line-t_line)+1)
                                     for(c = 0;c < (b_line - t_line) && (*crnt_list)->last != NULL;
                                     c++,(*crnt_list) = (*crnt_list)->last,line_counter--);
@@ -734,6 +740,7 @@ struct cmndline_params cmndline[];
               case  SMG$K_TRM_CTRLP:
               case  SMG$K_TRM_CTRLN:
               case  SMG$K_TRM_CTRLE:
+              case  SMG$K_TRM_CTRLW:
               case  SMG$K_TRM_CTRLU:
 
               case 01    : exit = FALSE;
