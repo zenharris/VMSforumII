@@ -1595,13 +1595,13 @@ display_post (Rec)
 
       sprintf (outbuffer, "Posted  : %.*s", SIZE_TIMESTR - 1, timestr);
       put_line (Standard_Window, outbuffer);
-      Refresh (Standard_Window);
+/* scrn blink      Refresh (Standard_Window); */
 
       delete_editor_buffer (&start_line);
 
       load_editor_buffer (&start_line, FALSE);
 
-      Help
+      HelpNR
         ("|          |^R Reply  |^E Edit   |^N Next   |^P Prev   |^Z exit  PgUp/PgDn Page");
 
 

@@ -10,4 +10,5 @@ char warn_user(const char *, ...);
 void HeadLine (const char *,enum headline_mode, ...);
 void Status (const char *, ...);
 void Help (const char *, ...);
+void HelpNR (const char *, ...);
 

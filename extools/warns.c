@@ -167,5 +167,25 @@ void Help (const char *format, ...)
 
 
 }
+void HelpNR (const char *format, ...)
+{
+   unsigned long row,col;
+   char buffer[1024];
+   va_list argptr;
+
+   va_start(argptr, format);
+   vsprintf(buffer,format,argptr);
+   va_end(argptr);
+
+   row = smg$cursor_row(&crnt_window->display_id);
+   col = smg$cursor_column(&crnt_window->display_id);
+
+   clreolpos(Standard_Window,helpLine,1);
+   Add(Standard_Window,helpLine,1, buffer);
+
+   smg$set_cursor_abs(&crnt_window->display_id,&row,&col);
+
+
+}
 
 
