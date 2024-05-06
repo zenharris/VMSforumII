@@ -29,8 +29,6 @@ again.
 The result of this operation is FORUM.EXE.
 
 Forum will run at user level though a system administrator
-could install FORUM with greater privilege to protect the
-message database file which must have write permission to
-users.
-
+could install FORUM with sysprv to allow write permission to
+the message database for all users.
 
