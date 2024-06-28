@@ -1,11 +1,11 @@
 
+
                      VMSforumII
  		  BBS style Forum
-	    For Openvms on VAX and Alpha
+		 For VAX and Alpha
 
 Author: Michael Brown, Newcastle, Australia
-
-Email : vmslib@b5.net
+E-mail: vmslib@b5.net
 
 Latest Versions available at 
 https://eisner.decus.org/~brown_mi/
@@ -29,8 +29,7 @@ again.
 The result of this operation is FORUM.EXE.
 
 Forum will run at user level though a system administrator
-could install FORUM with greater privilege to protect the
-message database file which must have write permission to
-users.
-
+could install FORUM with sysprv which will allow all users
+to post without giving world RW permission to the message
+database file.
 

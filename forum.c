@@ -32,7 +32,7 @@
 
 #include "forfile.h"
 
-#define VERSION "2.25.1"
+#define VERSION "2.25.2"
 
 
 /*  Moved to forfile.h
@@ -2031,25 +2031,44 @@ PF4key (void)
         }
     }
 
+#ifdef DISABLE_DELETE
+  if (strcmp (user_name, PRIV_USER) != 0) 
+    {
+      warn_user ("Deleting is disabled %s %u",
+                 filterfn (__FILE__), __LINE__);
+      return(FALSE);
+    }
+#endif
+
+  
 
   Help ("Do you want to Delete this record :  Y/N");
   switch (Get_Keystroke ())
     {
     case 'Y':
     case 'y':
-      if (CurrentPtr != NULL)
-        if (CurrentPtr->Next != NULL)
-          rfa_copy (&FindRec, &CurrentPtr->Next->rfa);
-        else if (CurrentPtr->Prev != NULL)
-          {
-            rfa_copy (&FindRec, &CurrentPtr->Prev->rfa);
-          }
-      Delete_Post (&CurrentPtr->rfa);
+      Help("Are you sure:  Y/N");
+      switch(Get_Keystroke ())
+        {
+        case 'Y':
+        case 'y':
+          if (CurrentPtr != NULL)
+            if (CurrentPtr->Next != NULL)
+              rfa_copy (&FindRec, &CurrentPtr->Next->rfa);
+            else if (CurrentPtr->Prev != NULL)
+              {
+                rfa_copy (&FindRec, &CurrentPtr->Prev->rfa);
+              }
+          Delete_Post (&CurrentPtr->rfa);
 
 /*          Read_Directory(LISTKEY);    */
 /*          DeleteLine(&CurrentPtr);     */
 
-      active_align_list (&CurrentPtr, &FindRec);
+          active_align_list (&CurrentPtr, &FindRec);
+          break;
+        default:
+          break;
+        }
       break;
     case 'n':
     case 'N':
