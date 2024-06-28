@@ -10,6 +10,8 @@
 #include rms
 #include stdio
 #include ssdef
+#include stsdef   /* for sys$brkthru */
+#include brkdef   /* for sys$brkthru */
 #include string
 #include stdlib
 #include starlet
@@ -18,6 +20,8 @@
 #include ints
 #include jpidef
 #include stdarg
+#include errno
+#include ctype
 
 #include smgdef
 #include smg$routines
@@ -32,7 +36,7 @@
 
 #include "forfile.h"
 
-#define VERSION "2.25.2"
+#define VERSION "2.25.3"
 
 
 /*  Moved to forfile.h
@@ -198,6 +202,40 @@ rmstest (int rmscode, int num, ...)
   return found;
 }
 
+int broadcast_message(usernam,message)
+char *usernam;
+char *message;
+{
+   unsigned long int carcon = 0x20;
+   unsigned long int retstat;
+   unsigned short int iosb[4];   
+   struct dsc$descriptor_s trg,msg;
+
+   trg.dsc$a_pointer = usernam;
+   trg.dsc$w_length = strlen(usernam);
+   trg.dsc$b_class =  DSC$K_CLASS_S; /* String descriptor class */
+   trg.dsc$b_dtype =  DSC$K_DTYPE_T; /* Data type ASCII string */
+
+   msg.dsc$a_pointer = message;
+   msg.dsc$w_length = strlen(message);
+   msg.dsc$b_class =  DSC$K_CLASS_S;
+   msg.dsc$b_dtype =  DSC$K_DTYPE_T;
+
+   retstat = sys$brkthru( 0, &msg,
+      &trg, BRK$C_USERNAME, iosb, &carcon, 0, BRK$C_USER1, 5, 0, 0 );
+
+   if (!$VMS_STATUS_SUCCESS( retstat )) {
+      warn_user ("BCAST ERR1 %s %s %u",strerror (EVMSERR, retstat),filterfn(__FILE__),__LINE__);
+      return retstat;
+   }
+/*
+   if (!$VMS_STATUS_SUCCESS( iosb[0] )){
+      warn_user ("BCAST ERR2 %s %s %u",strerror (EVMSERR, iosb[0]),filterfn(__FILE__),__LINE__);
+      return iosb[0];
+   }
+*/
+   return SS$_NORMAL;
+}
 
 
 
@@ -214,6 +252,9 @@ Increment (IncLine)
       Scroll_Up (TopLine, BottomLine);
     }
 }
+
+
+
 
 void
 Decrement (DecLine)
@@ -1367,11 +1408,11 @@ Post_Reply (update)
   $DESCRIPTOR (user_name_d, fileio.record.user_name);
   static int item_code = JPI$_USERNAME; /* JPI$_PRCNAM; */
   struct line_rec *delptr;
-  int retcode, edited = FALSE, exit = FALSE;
-
-  char timestr[SIZE_TIMESTR], outbuffer[300];
+  int retcode, edited = FALSE, exit = FALSE,trm;
+  char brkthru_name[SIZE_UNAME+1],brkthru_msg[256];
+  char timestr[SIZE_TIMESTR], outbuffer[300];   
   $DESCRIPTOR (timestrdsc, timestr);
-  int status;
+  int status,bcast_ret;
 
   outbuffer[0] = 0;
 
@@ -1393,6 +1434,13 @@ Post_Reply (update)
 
   if (!update)
     {
+
+      strncpy(brkthru_name,fileio.record.user_name,SIZE_UNAME);
+      for(trm=SIZE_UNAME-1;trm > 0;trm--) 
+        if (!isalnum(brkthru_name[trm])) brkthru_name[trm]=0;
+        else break;
+
+
       if (strncmp (fileio.record.subject, "Re.", 3) != 0)
         {
           strcpy (outbuffer, "Re. ");
@@ -1460,6 +1508,13 @@ Post_Reply (update)
 
                   if (!update)
                     {
+#ifdef ENABLE_NOTIFY
+                       if (strcmp(brkthru_name,user_name) != 0) {
+                          sprintf(brkthru_msg,"FORUM: Reply from %s %s",
+                                  user_name,fileio.record.subject);
+                          broadcast_message(brkthru_name,brkthru_msg);
+                       }
+#endif
 /* ZEN do not update replyto field
               if (strcmp(fileio.record.msgid,fileio.record.replyto) == 0)
                   mkuid(fileio.record.replyto,fileio.record.posted);
